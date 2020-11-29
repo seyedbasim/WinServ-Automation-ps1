@@ -1,0 +1,23 @@
+Add-Content -Path C:\Time.csv  -Value '"Computer Name","Computer Time","PDC Time","Time Source"'
+
+$PDCname = "Flashpoint"
+
+$Computers = Get-ADComputer -Filter * 
+$Computers | ForEach-Object {
+   $Computer = $_.DNSHostName
+   $pdc = Get-WmiObject -Class Win32_LocalTime -ComputerName $PDCname
+   $test = Get-WmiObject -Class Win32_LocalTime -ComputerName $Computer
+   $Computer_Time = $test.hour.ToString() + ":" + $test.Minute.ToString() + ":" + $test.Second.ToString()
+   $PDC_Time = $pdc.hour.ToString() + ":" + $pdc.Minute.ToString() + ":" + $pdc.Second.ToString()
+   $Source = w32tm /query /source /computer:$Computer
+    $hash = @{
+             "Computer Name" = $Computer 
+             "Computer Time" = $Computer_Time 
+             "PDC Time" = $PDC_Time  
+             "Time Source" = $Source
+             }
+   $newRow = New-Object PsObject -Property $hash
+   Export-Csv C:\Time.csv -inputobject $newrow -append -Force
+}
+
+

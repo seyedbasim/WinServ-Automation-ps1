@@ -1,0 +1,3 @@
+cd "C:\Program files\Microsoft Windows Server Update Services\Tools"
+
+wsusutil.exe movecontent "D:\WSUS" D:\logfile.log
